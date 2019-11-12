@@ -23,8 +23,8 @@ public class QuizActivity extends AppCompatActivity {
     private static final String KEY_INDEX = "index";
     private ArrayList<Integer> mArrayList;
     private int questionQuantity = 0;
-    private float counter = 0;
-    boolean isItTimeToStart = false;
+    private float rightAnswerCounter = 0;
+    boolean itIsTimeToStart = false;
     private Question[] mQuestionBank = {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
@@ -42,7 +42,6 @@ public class QuizActivity extends AppCompatActivity {
         mTrueButton = findViewById(R.id.true_button);
         mFalseButton = findViewById(R.id.false_button);
         mNextButton = findViewById(R.id.next_button);
-        mQuestionTextView = findViewById(R.id.question_text_view);
         mPreviousButton = findViewById(R.id.previous_button);
         questionQuantity = mQuestionBank.length;
         mArrayList = new ArrayList<>(questionQuantity);
@@ -78,8 +77,8 @@ public class QuizActivity extends AppCompatActivity {
                 mPreviousButton.setVisibility(View.VISIBLE);
                 increaseIndex();
                 updateQuestion();
-                if (mCurrentIndex==questionQuantity-1)
-                    isItTimeToStart = true;
+                if (mCurrentIndex == questionQuantity - 1)
+                    itIsTimeToStart = true;
 
             }
         });
@@ -92,23 +91,29 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_INDEX, mCurrentIndex);
+    }
+
     private void increaseIndex() {
         mCurrentIndex = (mCurrentIndex + 1) % questionQuantity;
 
     }
 
     private void decreaseIndex() {
-            mCurrentIndex = (mCurrentIndex - 1);
+        mCurrentIndex = (mCurrentIndex - 1);
     }
 
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
-        if (mCurrentIndex==0) {
+        if (mCurrentIndex == 0) {
             mPreviousButton.setVisibility(View.GONE);
-            if(isItTimeToStart) {
+            if (itIsTimeToStart) {
                 newGame();
-                counter = 0;
+                rightAnswerCounter = 0;
             }
         }
         if (mArrayList.get(mCurrentIndex) == 1) {
@@ -121,7 +126,7 @@ public class QuizActivity extends AppCompatActivity {
         int messageResId = 0;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
-            counter++;
+            rightAnswerCounter++;
         } else {
             messageResId = R.string.incorrect_toast;
         }
@@ -130,20 +135,14 @@ public class QuizActivity extends AppCompatActivity {
         mArrayList.set(mCurrentIndex, 1);
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(KEY_INDEX, mCurrentIndex);
-    }
-
     private void newGame() {
         for (int i = 0; i < questionQuantity; i++) {
-            mArrayList.set(i, 0);}
-            counter = counter * 100 / questionQuantity;
-            Toast.makeText(QuizActivity.this, "Ваш результат: " + (int) counter + "%", Toast.LENGTH_SHORT).show();
-            isItTimeToStart =false;
+            mArrayList.set(i, 0);
+        }
+        rightAnswerCounter = rightAnswerCounter * 100 / questionQuantity;
+        Toast.makeText(QuizActivity.this, "Ваш результат: " + (int) rightAnswerCounter + "%", Toast.LENGTH_SHORT).show();
+        itIsTimeToStart = false;
     }
-
 
     private void buttonEnable(boolean b) {
         mTrueButton.setEnabled(b);
