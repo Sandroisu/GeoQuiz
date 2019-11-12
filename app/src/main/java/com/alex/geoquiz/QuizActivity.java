@@ -42,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
         mTrueButton = findViewById(R.id.true_button);
         mFalseButton = findViewById(R.id.false_button);
         mNextButton = findViewById(R.id.next_button);
+        mQuestionTextView = findViewById(R.id.question_text_view);
         mPreviousButton = findViewById(R.id.previous_button);
         questionQuantity = mQuestionBank.length;
         mArrayList = new ArrayList<>(questionQuantity);
