@@ -1,8 +1,11 @@
 package com.alex.geoquiz;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -21,16 +24,22 @@ import static android.widget.Toast.makeText;
 public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mCheatButton;
     private ImageButton mNextButton;
     private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
     private static final String KEY_INDEX = "index";
     private static final String ANSWER_STATE = "answer_state";
     private static final String ANSWERS_COUNT = "answers_count";
-    private ArrayList<Integer> mArrayList;
+    private static final String RIGHT_ANSWERS_COUNTER = "right_answers_counter";
+    private static final String IS_HE_A_CHEATER = "is_he_a_cheater";
+    private ArrayList<Integer> mAnswersArrayList;
+    private ArrayList<Integer> mCheaterArrayList;
     private int questionQuantity = 0;
     private float rightAnswerCounter = 0;
     private int thisIsTheEnd = 0;
+    private static final int REQUEST_CODE_CHEAT = 0;
+    private boolean mIsCheater;
     private Question[] mQuestionBank = {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
@@ -50,16 +59,23 @@ public class QuizActivity extends AppCompatActivity {
         mNextButton = findViewById(R.id.next_button);
         mQuestionTextView = findViewById(R.id.question_text_view);
         mPreviousButton = findViewById(R.id.previous_button);
+        mCheatButton = findViewById(R.id.quiz_cheat_button);
         questionQuantity = mQuestionBank.length;
-        mArrayList = new ArrayList<>(questionQuantity);
+        mAnswersArrayList = new ArrayList<>(questionQuantity);
         for (int i = 0; i < questionQuantity; i++) {
-            mArrayList.add(i, 0);
+            mAnswersArrayList.add(i, 0);
+        }
+        mCheaterArrayList = new ArrayList<>(questionQuantity);
+        for (int i = 0; i < questionQuantity; i++) {
+            mCheaterArrayList.add(i, 0);
         }
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            mArrayList = savedInstanceState.getIntegerArrayList(ANSWER_STATE);
+            mAnswersArrayList = savedInstanceState.getIntegerArrayList(ANSWER_STATE);
             thisIsTheEnd = savedInstanceState.getInt(ANSWERS_COUNT, 0);
+            rightAnswerCounter = savedInstanceState.getFloat(RIGHT_ANSWERS_COUNTER);
+            mIsCheater = savedInstanceState.getBoolean(IS_HE_A_CHEATER);
         }
 
         updateQuestion();
@@ -85,6 +101,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 increaseIndex();
                 updateQuestion();
+                mIsCheater = false;
             }
         });
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +111,14 @@ public class QuizActivity extends AppCompatActivity {
                 updateQuestion();
             }
         });
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
+            }
+        });
     }
 
     @Override
@@ -101,7 +126,24 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_INDEX, mCurrentIndex);
         outState.putInt(ANSWERS_COUNT, thisIsTheEnd);
-        outState.putIntegerArrayList(ANSWER_STATE, mArrayList);
+        outState.putIntegerArrayList(ANSWER_STATE, mAnswersArrayList);
+        outState.putFloat(RIGHT_ANSWERS_COUNTER, rightAnswerCounter);
+        outState.putBoolean(IS_HE_A_CHEATER, mIsCheater);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+            mCheaterArrayList.set(mCurrentIndex, 1);
+        }
     }
 
     private void increaseIndex() {
@@ -120,7 +162,7 @@ public class QuizActivity extends AppCompatActivity {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
 
-        if (mArrayList.get(mCurrentIndex) == 1) {
+        if (mAnswersArrayList.get(mCurrentIndex) == 1) {
             buttonEnable(false);
         } else buttonEnable(true);
     }
@@ -128,25 +170,34 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
-            rightAnswerCounter++;
-        } else {
-            messageResId = R.string.incorrect_toast;
+        if (mIsCheater||(mCheaterArrayList.get(mCurrentIndex)==1)){
+            messageResId = R.string.judgment_toast;
+        }
+        else{
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+                rightAnswerCounter++;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
         }
         makeText(this, messageResId, Toast.LENGTH_LONG).show();
         buttonEnable(false);
-        mArrayList.set(mCurrentIndex, 1);
+        mAnswersArrayList.set(mCurrentIndex, 1);
         thisIsTheEnd++;
         if (thisIsTheEnd == 6) {
             newGame();
             rightAnswerCounter = 0;
+
         }
     }
 
     private void newGame() {
         for (int i = 0; i < questionQuantity; i++) {
-            mArrayList.set(i, 0);
+            mAnswersArrayList.set(i, 0);
+        }
+        for (int i = 0; i < questionQuantity; i++) {
+            mCheaterArrayList.set(i, 0);
         }
         rightAnswerCounter = rightAnswerCounter * 100 / questionQuantity;
         LayoutInflater inflater = getLayoutInflater();
