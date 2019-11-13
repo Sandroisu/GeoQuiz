@@ -144,16 +144,16 @@ public class QuizActivity extends AppCompatActivity {
         for (int i = 0; i < questionQuantity; i++) {
             mArrayList.set(i, 0);
         }
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.custom_toast_container));
-        TextView tv = layout.findViewById(R.id.txtvw);
         rightAnswerCounter = rightAnswerCounter * 100 / questionQuantity;
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.llToast));
+        TextView tv = layout.findViewById(R.id.tvToast);
         tv.setText("Ваш результат: " + (int) rightAnswerCounter + "%");
-        if (rightAnswerCounter==100)
+        if (rightAnswerCounter == 100)
             layout.setBackgroundColor(Color.GREEN);
         Toast toast = new Toast(this);
         toast.setDuration(Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0,0);
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setView(layout);
         toast.show();
         itIsTimeToStart = false;
