@@ -3,8 +3,12 @@ package com.alex.geoquiz;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -140,8 +144,18 @@ public class QuizActivity extends AppCompatActivity {
         for (int i = 0; i < questionQuantity; i++) {
             mArrayList.set(i, 0);
         }
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.custom_toast_container));
+        TextView tv = layout.findViewById(R.id.txtvw);
         rightAnswerCounter = rightAnswerCounter * 100 / questionQuantity;
-        Toast.makeText(QuizActivity.this, "Ваш результат: " + (int) rightAnswerCounter + "%", Toast.LENGTH_SHORT).show();
+        tv.setText("Ваш результат: " + (int) rightAnswerCounter + "%");
+        if (rightAnswerCounter==100)
+            layout.setBackgroundColor(Color.GREEN);
+        Toast toast = new Toast(this);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0,0);
+        toast.setView(layout);
+        toast.show();
         itIsTimeToStart = false;
     }
 
