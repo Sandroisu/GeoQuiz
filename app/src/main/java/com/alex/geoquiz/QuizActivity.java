@@ -25,10 +25,12 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
     private static final String KEY_INDEX = "index";
+    private static final String ANSWER_STATE = "answer_state";
+    private static final String ANSWERS_COUNT = "answers_count";
     private ArrayList<Integer> mArrayList;
     private int questionQuantity = 0;
     private float rightAnswerCounter = 0;
-    boolean itIsTimeToStart = false;
+    private int thisIsTheEnd = 0;
     private Question[] mQuestionBank = {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
@@ -56,6 +58,8 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mArrayList = savedInstanceState.getIntegerArrayList(ANSWER_STATE);
+            thisIsTheEnd = savedInstanceState.getInt(ANSWERS_COUNT, 0);
         }
 
         updateQuestion();
@@ -79,12 +83,8 @@ public class QuizActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPreviousButton.setVisibility(View.VISIBLE);
                 increaseIndex();
                 updateQuestion();
-                if (mCurrentIndex == questionQuantity - 1)
-                    itIsTimeToStart = true;
-
             }
         });
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +100,8 @@ public class QuizActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_INDEX, mCurrentIndex);
+        outState.putInt(ANSWERS_COUNT, thisIsTheEnd);
+        outState.putIntegerArrayList(ANSWER_STATE, mArrayList);
     }
 
     private void increaseIndex() {
@@ -108,19 +110,16 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void decreaseIndex() {
+        if (mCurrentIndex == 0) {
+            mCurrentIndex = 6;
+        }
         mCurrentIndex = (mCurrentIndex - 1);
     }
 
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
-        if (mCurrentIndex == 0) {
-            mPreviousButton.setVisibility(View.GONE);
-            if (itIsTimeToStart) {
-                newGame();
-                rightAnswerCounter = 0;
-            }
-        }
+
         if (mArrayList.get(mCurrentIndex) == 1) {
             buttonEnable(false);
         } else buttonEnable(true);
@@ -138,6 +137,11 @@ public class QuizActivity extends AppCompatActivity {
         makeText(this, messageResId, Toast.LENGTH_LONG).show();
         buttonEnable(false);
         mArrayList.set(mCurrentIndex, 1);
+        thisIsTheEnd++;
+        if (thisIsTheEnd == 6) {
+            newGame();
+            rightAnswerCounter = 0;
+        }
     }
 
     private void newGame() {
@@ -148,7 +152,8 @@ public class QuizActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.llToast));
         TextView tv = layout.findViewById(R.id.tvToast);
-        tv.setText("Ваш результат: " + (int) rightAnswerCounter + "%");
+        String s = "Ваш результат: " + (int) rightAnswerCounter + "%";
+        tv.setText(s);
         if (rightAnswerCounter == 100)
             layout.setBackgroundColor(Color.GREEN);
         Toast toast = new Toast(this);
@@ -156,7 +161,7 @@ public class QuizActivity extends AppCompatActivity {
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setView(layout);
         toast.show();
-        itIsTimeToStart = false;
+        thisIsTheEnd = 0;
     }
 
     private void buttonEnable(boolean b) {
