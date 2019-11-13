@@ -14,7 +14,7 @@ public class CheatActivity extends AppCompatActivity {
     private static final String EXTRA_ANSWER_IS_TRUE = "com.alex.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.alex.geoquiz.answer_shown";
     private static final String WAS_ANSWER_SHOWN = "was_answer_shown";
-    private static final String ANSWER= "answer";
+    private static final String ANSWER = "answer";
     private boolean mAnswerWasShown = false;
     private boolean mAnswerIsTrue;
     private String answer = null;
@@ -28,11 +28,11 @@ public class CheatActivity extends AppCompatActivity {
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
         mAnswerTextView = findViewById(R.id.cheat_tvAnswer);
         mShowAnswerButton = findViewById(R.id.cheat_btnShowAnswer);
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             setAnswerShownResult(savedInstanceState.getBoolean(WAS_ANSWER_SHOWN));
             answer = savedInstanceState.getString(ANSWER);
-                    if(answer!=null){
-             mAnswerTextView.setText(answer);
+            if (answer != null) {
+                mAnswerTextView.setText(answer);
             }
         }
         mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +50,7 @@ public class CheatActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(WAS_ANSWER_SHOWN, mAnswerWasShown);
-        if (answer!= null){
+        if (answer != null) {
             outState.putString(ANSWER, answer);
         }
     }
@@ -66,6 +66,7 @@ public class CheatActivity extends AppCompatActivity {
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
         setResult(RESULT_OK, data);
     }
+
     public static boolean wasAnswerShown(Intent result) {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }

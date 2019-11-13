@@ -3,9 +3,10 @@ package com.alex.geoquiz;
 public class Question {
     private int mTextResId;
     private boolean mAnswerTrue;
-    public Question(int TextResId, boolean AnswerTrue){
-         mTextResId=TextResId;
-         mAnswerTrue = AnswerTrue;
+
+    public Question(int TextResId, boolean AnswerTrue) {
+        mTextResId = TextResId;
+        mAnswerTrue = AnswerTrue;
     }
 
     public boolean isAnswerTrue() {

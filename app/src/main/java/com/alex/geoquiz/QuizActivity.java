@@ -170,10 +170,9 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
-        if (mIsCheater||(mCheaterArrayList.get(mCurrentIndex)==1)){
+        if (mIsCheater || (mCheaterArrayList.get(mCurrentIndex) == 1)) {
             messageResId = R.string.judgment_toast;
-        }
-        else{
+        } else {
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
                 rightAnswerCounter++;
