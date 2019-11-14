@@ -173,13 +173,13 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
-        if (mCheaterArrayList.get(mCurrentIndex) == 1){
+        if (mCheaterArrayList.get(mCurrentIndex) == 1) {
             mCheatButton.setEnabled(false);
-            if(mAnswersArrayList.get(mCurrentIndex)!=1) {
+            if (mAnswersArrayList.get(mCurrentIndex) != 1) {
                 mNextButton.setEnabled(false);
                 mPreviousButton.setEnabled(false);
             }
-        }else if(cheatsCounter>=3)mCheatButton.setEnabled(false);
+        } else if (cheatsCounter >= 3) mCheatButton.setEnabled(false);
         else mCheatButton.setEnabled(true);
         if (mAnswersArrayList.get(mCurrentIndex) == 1) {
             buttonEnable(false);
@@ -222,7 +222,7 @@ public class QuizActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.llToast));
         TextView tv = layout.findViewById(R.id.tvToast);
-        String s = "Ваш результат: " + (int) rightAnswerCounter + "%";
+        String s = "Your result: " + (int) rightAnswerCounter + "%";
         tv.setText(s);
         if (rightAnswerCounter == 100)
             layout.setBackgroundColor(Color.GREEN);

@@ -15,13 +15,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class CheatActivity extends AppCompatActivity {
-    private static final String EXTRA_ANSWER_IS_TRUE = "com.alex.geoquiz.answer_is_true";
-    private static final String EXTRA_ANSWER_SHOWN = "com.alex.geoquiz.answer_shown";
-    private static final String WAS_ANSWER_SHOWN = "was_answer_shown";
-    private static final String ANSWER = "answer";
-    private static final String HE_CHEATS_TOO_MUCH = "he_cheats_too_much";
-    private static final String HE_CHEATS_TOO_MUCH_1 = "he_cheats_too_much_1";
-    private static final String IS_HE_CHEATS_TOO_MUCH = "is_he_cheats_too_much";
+    private static final String EXTRA_ANSWER_IS_TRUE = "com.alex.geoQuiz.answer_is_true";
+    private static final String EXTRA_ANSWER_SHOWN = "com.alex.geoQuiz.answer_shown";
+    private static final String WAS_ANSWER_SHOWN = "com.alex.geoQuiz.was_answer_shown";
+    private static final String ANSWER = "com.alex.geoQuiz.answer";
+    private static final String HE_CHEATS_TOO_MUCH = "com.alex.geoQuiz.he_cheats_too_much";
+    private static final String DO_NOT_LET_HIM_CHEAT = "com.alex.geoQuiz.do_not_let_him_cheat";
+    private static final String IS_HE_CHEATS_TOO_MUCH = "com.alex.geoQuiz.is_he_cheats_too_much";
     private boolean mAnswerWasShown = false;
     private boolean mAnswerIsTrue;
     private String answer = null;
@@ -30,7 +30,6 @@ public class CheatActivity extends AppCompatActivity {
     private Button mShowAnswerButton;
     private static int cheatsCounter = 0;
     private int maximumCheats = 3;
-    private String APIAndTryCounter;
 
 
     @Override
@@ -45,7 +44,7 @@ public class CheatActivity extends AppCompatActivity {
         if (cheatsCounter == maximumCheats) mShowAnswerButton.setEnabled(false);
 
         if (savedInstanceState != null) {
-            cheatsCounter = savedInstanceState.getInt(HE_CHEATS_TOO_MUCH_1);
+            cheatsCounter = savedInstanceState.getInt(DO_NOT_LET_HIM_CHEAT);
             if (cheatsCounter == maximumCheats) mShowAnswerButton.setEnabled(false);
             mAPILevel.setText(howManyTrysLeft(cheatsCounter));
             setAnswerShownResult(savedInstanceState.getBoolean(WAS_ANSWER_SHOWN), cheatsCounter);
@@ -54,7 +53,7 @@ public class CheatActivity extends AppCompatActivity {
                 mAnswerTextView.setText(answer);
                 mShowAnswerButton.setVisibility(View.INVISIBLE);
             }
-        }else mAPILevel.setText(howManyTrysLeft(cheatsCounter));
+        } else mAPILevel.setText(howManyTrysLeft(cheatsCounter));
         mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +92,7 @@ public class CheatActivity extends AppCompatActivity {
         if (answer != null) {
             outState.putString(ANSWER, answer);
         }
-        outState.putInt(HE_CHEATS_TOO_MUCH_1, cheatsCounter);
+        outState.putInt(DO_NOT_LET_HIM_CHEAT, cheatsCounter);
     }
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue, int cheatsCounter) {
@@ -117,8 +116,9 @@ public class CheatActivity extends AppCompatActivity {
     public static boolean wasAnswerShown(Intent result) {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
-    private String howManyTrysLeft(Integer cheatsCounter){
-        APIAndTryCounter  = "your API level is " + Build.VERSION.SDK_INT + "\n" + "Осталось " + (maximumCheats - cheatsCounter) + " попыток читер!";
-        return APIAndTryCounter;
+
+    private String howManyTrysLeft(Integer cheatsCounter) {
+        String APIAndTriesCounter = "your API level is " + Build.VERSION.SDK_INT + "\n" + (maximumCheats - cheatsCounter) + " attempts left";
+        return APIAndTriesCounter;
     }
 }

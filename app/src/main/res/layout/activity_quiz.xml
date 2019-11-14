@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/cd_previous_button"
             android:padding="4dp"
-            android:src="@drawable/ic_arrow_back_black_24dp" />
+            android:src="@drawable/ic_arrow_back_green_24dp" />
 
         <ImageButton
             android:id="@+id/next_button"
@@ -60,6 +60,6 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/cd_next_button"
             android:padding="4dp"
-            android:src="@drawable/ic_arrow_forward_black_24dp" />
+            android:src="@drawable/ic_arrow_forward_green_24dp" />
     </LinearLayout>
 </LinearLayout>
